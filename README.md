@@ -20,8 +20,8 @@
 - 🎯 帮助交互引导
 
 ## 🚀 部署介绍
- 此项目为魔改TS3AudioBot中Webinterface的Index.html，适用于搭配[TS3AudioBot-NetEaseCloudmusic-plugin-wellwhz优化版](https://github.com/wellwhz/TS3AudioBot-NetEaseCloudmusic-plugin)与[NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)的[TS3AudioBot](https://github.com/Splamy/TS3AudioBot)。
+ 此项目为魔改TS3AudioBot中Webinterface的Index.html，适用于搭配[TS3AudioBot-NetEaseCloudmusic-plugin-wellwhz优化版](https://github.com/wellwhz/TS3AudioBot-NetEaseCloudmusic-plugin)与[NeteaseCloudMusicApi](https://gitlab.com/Binaryify/neteasecloudmusicapi)的[TS3AudioBot](https://github.com/Splamy/TS3AudioBot)。请先完成这些项目的部署。
 
 原理为通过TS3AudioBot和网易云音乐的API实现页面端操控与展示。
 
-将本项目`index.html` 替换TS3AudioBo的 `WebInterface` 目录下的同名文件，将文件中的五处`127.0.0.1:3000`替换为你的NeteaseCloudMusicApi地址。
+将本项目`index.html` 替换TS3AudioBot的 `WebInterface` 目录下的同名文件，将文件中的五处`127.0.0.1:3000`替换为你的NeteaseCloudMusicApi地址。
