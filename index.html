@@ -1480,7 +1480,7 @@
 <body>
     <div class="container">
         <div class="top-buttons">
-            <a href="http://127.0.0.1:58913/" class="top-button" target="_blank">
+            <a href="https://bluish.net/" class="top-button" target="_blank">
                 <span class="material-symbols-outlined">analytics</span>
                 <span>待定</span>
             </a>
@@ -1712,6 +1712,9 @@
             const themeIcon = document.querySelector('button.top-button .material-symbols-outlined');
             themeIcon.textContent = savedTheme === 'light' ? 'dark_mode' : 'light_mode';
             
+            // 获取实际音量
+            await getCurrentVolume();
+            
             // 初始化历史记录
             try {
                 const savedHistory = localStorage.getItem('playHistory');
@@ -1777,10 +1780,38 @@
         let isPaused = true;
         let currentTitle = ''; // 用于跟踪当前歌曲
         
+        // 获取当前实际音量
+        async function getCurrentVolume() {
+            try {
+                const response = await fetch(`${API_BASE}/api/bot/use/0/(/volume)`);
+                const data = await response.json();
+                if (data && data.Value) {
+                    const volume = parseInt(data.Value);
+                    volumeSlider.value = volume;
+                    volumeValue.textContent = volume + '%';
+                    localStorage.setItem('lastVolume', volume);
+                    return volume;
+                }
+            } catch (error) {
+                console.error('获取音量失败:', error);
+            }
+            return null;
+        }
+        
         volumeSlider.addEventListener('input', function() {
-            volumeValue.textContent = this.value + '%';
-            setVolume(this.value);
+            const volume = this.value;
+            volumeValue.textContent = volume + '%';
+            setVolume(volume);
+            localStorage.setItem('lastVolume', volume);
         });
+
+        // 修改音量设置函数
+        async function setVolume(value) {
+            console.log('Set volume:', value);
+            updateStatus(`设置音量为 ${value}%`);
+            await sendCommand(`bot/use/0/(!volume ${value})`);
+            localStorage.setItem('lastVolume', value);
+        }
 
         // API调用函数
         async function sendCommand(command) {
@@ -2148,6 +2179,12 @@
                             await fetchSongDetails(newSongId);
                             // 添加获取相似歌曲
                             await fetchSimilarSongs(newSongId);
+                            
+                            // 在歌曲切换后，获取并设置保存的音量
+                            const savedVolume = localStorage.getItem('lastVolume');
+                            if (savedVolume) {
+                                await setVolume(savedVolume);
+                            }
                         }
                     }
                 }
@@ -2305,12 +2342,6 @@
             console.log('Play next');
             updateStatus('播放下一首中...');
             sendCommand('bot/use/0/(!next)');
-        }
-
-        function setVolume(value) {
-            console.log('Set volume:', value);
-            updateStatus(`设置音量为 ${value}%`);
-            sendCommand(`bot/use/0/(!volume ${value})`);
         }
 
         // 状态更新
