@@ -1617,7 +1617,7 @@
                     <label>音乐ID</label>
                     <input type="text" id="musicId" placeholder="输入网易云音乐ID">
                 </div>
-                <button class="btn control" onclick="playById()">
+                <button class="btn control" onclick="playById(document.getElementById('musicId').value)">
                     <span class="material-symbols-outlined">play_circle</span>
                     直接播放
                 </button>
@@ -2295,11 +2295,12 @@
             if (song) sendCommand(`bot/use/0/(!yun add ${encodeURIComponent(song)})`);
         }
 
-        function playById() {
-            const id = document.getElementById('musicId').value;
-            console.log('Play by ID:', id);
+        function playById(id) {
+            console.log('Play song:', id);
             updateStatus('直接播放中...');
-            if (id) sendCommand(`bot/use/0/(!yun playid ${encodeURIComponent(id)})`);
+            if (id) {
+                sendCommand(`bot/use/0/(!yun play ${encodeURIComponent(id)})`);
+            }
         }
 
         function searchAndPlayList() {
@@ -2313,7 +2314,7 @@
             const id = document.getElementById('playlistId').value;
             console.log('Play playlist by ID:', id);
             updateStatus('直接播放歌单中...');
-            if (id) sendCommand(`bot/use/0/(!yun gedanid ${encodeURIComponent(id)})`);
+            if (id) sendCommand(`bot/use/0/(!yun gedan ${encodeURIComponent(id)})`);
         }
 
         function playNextInPlaylist() {
@@ -2735,22 +2736,6 @@
             } else {
                 const days = Math.floor(seconds / 86400);
                 return `${days}天前`;
-            }
-        }
-
-        // 修改playById函数，使其可以被历史记录调用
-        function playById(id) {
-            console.log('Play song:', id);
-            updateStatus('直接播放中...');
-            if (id) {
-                // 如果是从历史记录播放，使用 play 命令
-                if (typeof id === 'string') {
-                    sendCommand(`bot/use/0/(/yun/play ${encodeURIComponent(id)}`);
-                } else {
-                    // 如果是从输入框播放，使用 playid 命令
-                    const inputId = document.getElementById('musicId').value;
-                    if (inputId) sendCommand(`bot/use/0/(!yun playid ${encodeURIComponent(inputId)})`);
-                }
             }
         }
 
