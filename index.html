@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网易云音乐 - TS3AudioBot</title>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.loli.net/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <style>
         * {
@@ -995,6 +995,7 @@
         }
 
         .playlist-lyrics {
+            scroll-behavior: smooth;
             flex: 1;
             overflow-y: auto;
             margin-right: -10px;
@@ -1760,7 +1761,7 @@
 
             // 启动评论切换（如果有评论的话）
             if (currentComments.length > 1) {
-                commentSwitchTimeout = setTimeout(switchComment, 20000);
+                commentSwitchTimeout = setTimeout(switchComment, 1000);
             }
         });
 
@@ -2218,11 +2219,10 @@
                                 addToHistory(historyItem);
                             }
                         }
-                        
                         currentTitle = title;
                         // 去除计数字样显示在界面上
                         const cleanTitle = title.replace(/^\[\d+\/\d+\]\s*/, '');
-                        document.getElementById('currentSong').textContent = cleanTitle;
+                        document.getElementById('currentSong').textContent = cleanTitle.replace(/当前无正在播放歌曲/, '暂无播放')
                         // 如果标题发生变化，获取播放列表
                         await fetchPlaylist();
                     }
@@ -2640,17 +2640,40 @@
                 if (currentMainLine) {
                     currentMainLine.classList.add('current');
                     if (document.body.classList.contains('immersive-mode')) {
-                        currentMainLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // 使用 Element.scroll() 方法
+                        const container = currentMainLine.parentElement;
+                        const rect = currentMainLine.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+                        const offset = rect.top - containerRect.top;
+                        const scrollDistance = offset - (container.clientHeight / 2) + (currentMainLine.clientHeight / 2);
+                        container.scrollBy({
+                            top: scrollDistance,
+                            behavior: 'smooth'
+                        });
                     }
                 }
-
                 // 更新播放列表歌词容器
                 const allPlaylistLines = document.querySelectorAll('#playlistLyrics .lyrics-line');
                 allPlaylistLines.forEach(line => line.classList.remove('current'));
                 const currentPlaylistLine = document.querySelector(`#playlistLyrics .lyrics-line[data-time="${currentLyric.time}"]`);
                 if (currentPlaylistLine && document.getElementById('playlistLyrics').style.display === 'block') {
                     currentPlaylistLine.classList.add('current');
-                    currentPlaylistLine.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // 获取播放列表歌词容器的滚动容器
+                    const playlistLyricsContainer = document.getElementById('playlistLyrics');
+                    if (playlistLyricsContainer) {
+                        // 使用 Element.scroll() 方法
+                        const rect = currentPlaylistLine.getBoundingClientRect();
+                        const containerRect = playlistLyricsContainer.getBoundingClientRect();
+                        const offset = rect.top - containerRect.top;
+                        const scrollDistance = offset - (playlistLyricsContainer.clientHeight / 2) + (currentPlaylistLine.clientHeight / 2);
+                        // 使用 requestAnimationFrame 确保滚动在下一帧执行
+                        requestAnimationFrame(() => {
+                            playlistLyricsContainer.scrollBy({
+                                top: scrollDistance,
+                                behavior: 'smooth'
+                            });
+                        });
+                    }
                 }
             }
         }
